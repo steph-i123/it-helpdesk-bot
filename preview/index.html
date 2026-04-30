@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingPal Product Preview</title>
+  <style>
+    :root {
+      --navy: #07111f;
+      --panel: #0d1b2f;
+      --panel-soft: #12233b;
+      --blue: #2f6df6;
+      --cyan: #36d1ff;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #eef6ff;
+      --muted: #9eb1c8;
+      --line: rgba(255, 255, 255, 0.11);
+      --card: rgba(255, 255, 255, 0.08);
+      --white: #ffffff;
+      --page: #f5f8fc;
+      --ink: #0d1726;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--page);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-preview {
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(47, 109, 246, 0.34), transparent 32rem),
+        radial-gradient(circle at 75% 12%, rgba(54, 209, 255, 0.18), transparent 26rem),
+        linear-gradient(135deg, #07111f 0%, #0a1628 48%, #101c32 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .site-preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, #000, transparent 78%);
+      pointer-events: none;
+    }
+
+    .nav,
+    .hero,
+    .section {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 1.35rem;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: grid;
+      place-items: center;
+      color: white;
+      box-shadow: 0 16px 45px rgba(47, 109, 246, 0.38);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::before {
+      content: "P";
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .logo::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255, 255, 255, 0.55);
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+      right: 6px;
+      top: 7px;
+    }
+
+    .links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: #c7d6eb;
+      font-size: 0.95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: none;
+    }
+
+    .button.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--blue), #5b8cff);
+      box-shadow: 0 14px 34px rgba(47, 109, 246, 0.32);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1.04fr;
+      gap: 52px;
+      align-items: center;
+      padding: 72px 0 88px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #d5e6ff;
+      background: rgba(255, 255, 255, 0.06);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.16);
+    }
+
+    h1 {
+      font-size: clamp(3rem, 7vw, 5.65rem);
+      line-height: 0.95;
+      letter-spacing: -0.075em;
+      margin: 24px 0 22px;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(90deg, #ffffff, #9edcff 55%, #7effbb);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero-copy {
+      color: #bfd0e7;
+      font-size: 1.18rem;
+      line-height: 1.75;
+      max-width: 640px;
+      margin: 0 0 32px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .trust-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      color: #d9e8fb;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.96rem;
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(34, 197, 94, 0.16);
+      color: #86efac;
+      font-weight: 900;
+    }
+
+    .mock-stack {
+      position: relative;
+      min-height: 610px;
+    }
+
+    .office-card {
+      position: absolute;
+      right: -10px;
+      top: 0;
+      width: 48%;
+      min-height: 210px;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.06)),
+        radial-gradient(circle at 25% 20%, rgba(54,209,255,0.28), transparent 120px);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+      padding: 20px;
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .office-scene {
+      height: 170px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 20% 42%, #f7c7a7 0 21px, transparent 22px),
+        radial-gradient(circle at 54% 37%, #a9d8ff 0 22px, transparent 23px),
+        radial-gradient(circle at 78% 45%, #c8f5d4 0 19px, transparent 20px),
+        linear-gradient(#31445f 0 0) 18% 73% / 24% 45% no-repeat,
+        linear-gradient(#4a6c9f 0 0) 55% 75% / 25% 48% no-repeat,
+        linear-gradient(#375b4f 0 0) 80% 74% / 22% 42% no-repeat,
+        linear-gradient(135deg, #21304a, #0b1729);
+      position: relative;
+    }
+
+    .office-scene::after {
+      content: "Office teams, teachers, gamers, and remote workers";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 14px;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .app-card {
+      position: absolute;
+      left: 0;
+      top: 76px;
+      width: 78%;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: rgba(9, 19, 34, 0.86);
+      box-shadow: 0 34px 100px rgba(0, 0, 0, 0.44);
+      backdrop-filter: blur(22px);
+      overflow: hidden;
+    }
+
+    .window-bar {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--line);
+      color: #c8d8eb;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: #ff5f57;
+    }
+
+    .dots span:nth-child(2) {
+      background: #febc2e;
+    }
+
+    .dots span:nth-child(3) {
+      background: #28c840;
+    }
+
+    .app-body {
+      display: grid;
+      grid-template-columns: 188px 1fr;
+      min-height: 455px;
+    }
+
+    .sidebar {
+      padding: 22px 16px;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .side-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: #b8c8dc;
+      margin-bottom: 7px;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .side-item.active {
+      color: white;
+      background: linear-gradient(135deg, rgba(47,109,246,0.45), rgba(54,209,255,0.18));
+    }
+
+    .main-panel {
+      padding: 22px;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .mini-card,
+    .diagnosis,
+    .chat-box,
+    .report-card,
+    .account-card,
+    .knowledge-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .mini-card small,
+    .diagnosis small,
+    .report-card small {
+      color: var(--muted);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .mini-card strong {
+      display: block;
+      color: white;
+      font-size: 1.02rem;
+    }
+
+    .diagnosis {
+      margin-bottom: 16px;
+    }
+
+    .diagnosis h3,
+    .app-section h2,
+    .section-title h2 {
+      margin: 0 0 12px;
+      color: white;
+      letter-spacing: -0.035em;
+    }
+
+    .diag-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .diag-step {
+      border-radius: 16px;
+      background: rgba(255,255,255,0.055);
+      padding: 14px;
+      color: #dce9fb;
+      line-height: 1.45;
+    }
+
+    .diag-step b {
+      color: white;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .chat-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .chat-box p {
+      margin: 0;
+      color: #cbd9eb;
+      line-height: 1.5;
+    }
+
+    .floating-report {
+      position: absolute;
+      right: 18px;
+      bottom: 12px;
+      width: 300px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.32);
+    }
+
+    .meter {
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      width: 72%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .section-title {
+      max-width: 720px;
+      margin-bottom: 30px;
+    }
+
+    .section-title h2 {
+      color: var(--ink);
+      font-size: clamp(2rem, 4vw, 3.3rem);
+    }
+
+    .section-title p {
+      color: #5d6b80;
+      line-height: 1.7;
+      font-size: 1.06rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .account-card,
+    .knowledge-card {
+      background: white;
+      border-color: #dce6f2;
+      box-shadow: 0 18px 50px rgba(11, 25, 44, 0.08);
+      color: var(--ink);
+    }
+
+    .account-card h3,
+    .knowledge-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .account-card p,
+    .knowledge-card p {
+      color: #617087;
+      line-height: 1.65;
+      margin: 0 0 18px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: #2854b8;
+      font-weight: 800;
+      font-size: 0.78rem;
+    }
+
+    .app-section {
+      color: var(--text);
+      background:
+        radial-gradient(circle at 82% 18%, rgba(47,109,246,0.22), transparent 34rem),
+        linear-gradient(135deg, #08111f, #101d31);
+      padding: 78px 0;
+    }
+
+    .app-section .section-title h2 {
+      color: white;
+    }
+
+    .app-section .section-title p {
+      color: #b8c8dc;
+    }
+
+    .desktop-preview {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .large-window {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.28);
+    }
+
+    .large-content {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .mode-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mode-tab {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      border-radius: 999px;
+      color: #d4e4f8;
+      background: rgba(255,255,255,0.05);
+      font-weight: 800;
+      font-size: 0.86rem;
+    }
+
+    .mode-tab.active {
+      background: rgba(47,109,246,0.38);
+      color: white;
+    }
+
+    .flow-card {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.055);
+    }
+
+    .flow-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(47,109,246,0.28);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .flow-card h4 {
+      margin: 0 0 4px;
+      color: white;
+    }
+
+    .flow-card p {
+      margin: 0;
+      color: #b8c8dc;
+      line-height: 1.5;
+    }
+
+    .side-preview {
+      display: grid;
+      gap: 18px;
+    }
+
+    .report-card h3 {
+      margin: 0 0 12px;
+      color: white;
+    }
+
+    .code-box {
+      margin-top: 14px;
+      border: 1px dashed rgba(255,255,255,0.28);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.055);
+      color: white;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    .knowledge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .footer-note {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+      color: #607087;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .links {
+        display: none;
+      }
+
+      .hero,
+      .desktop-preview {
+        grid-template-columns: 1fr;
+      }
+
+      .mock-stack {
+        min-height: 560px;
+      }
+
+      .cards,
+      .knowledge-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-actions {
+        display: none;
+      }
+
+      .trust-list,
+      .cards,
+      .knowledge-grid,
+      .status-row,
+      .diag-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .app-body {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar,
+      .office-card,
+      .floating-report {
+        display: none;
+      }
+
+      .app-card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="site-preview">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="#">
+        <span class="logo" aria-hidden="true"></span>
+        <span>PingPal</span>
+      </a>
+      <div class="links">
+        <a href="#individual">Individuals</a>
+        <a href="#business">Business</a>
+        <a href="#teachers">Teachers</a>
+        <a href="#knowledge">Knowledge Base</a>
+        <a href="#download">Download</a>
+      </div>
+      <div class="nav-actions">
+        <a class="button" href="#">Log in</a>
+        <a class="button primary" href="#">Download</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span> AI troubleshooting that still helps when internet is down</div>
+        <h1>Tech problems? <span class="gradient-text">PingPal finds the issue.</span></h1>
+        <p class="hero-copy">
+          PingPal diagnoses internet, device, printer, gaming, remote work, and classroom tech problems.
+          It explains what happened, safely fixes what it can, and prepares the next step when you need your ISP or IT team.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#download">Download PingPal</a>
+          <a class="button" href="#app-preview">See the app preview</a>
+        </div>
+        <div class="trust-list">
+          <div class="trust-item"><span class="check">✓</span> Offline desktop diagnostics</div>
+          <div class="trust-item"><span class="check">✓</span> Hotspot rescue mode</div>
+          <div class="trust-item"><span class="check">✓</span> ISP and IT-ready reports</div>
+          <div class="trust-item"><span class="check">✓</span> Business employee join codes</div>
+        </div>
+      </div>
+
+      <div class="mock-stack" aria-label="PingPal product mockup">
+        <div class="office-card">
+          <div class="office-scene"></div>
+        </div>
+
+        <div class="app-card">
+          <div class="window-bar">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <strong>PingPal Desktop</strong>
+            <span>Online via hotspot</span>
+          </div>
+          <div class="app-body">
+            <aside class="sidebar">
+              <div class="side-item active">Troubleshoot</div>
+              <div class="side-item">Network</div>
+              <div class="side-item">Device Health</div>
+              <div class="side-item">Reports</div>
+              <div class="side-item">Knowledge</div>
+              <div class="side-item">Settings</div>
+            </aside>
+            <section class="main-panel">
+              <div class="status-row">
+                <div class="mini-card"><small>Connection</small><strong>Hotspot active</strong></div>
+                <div class="mini-card"><small>Home router</small><strong>Unreachable</strong></div>
+                <div class="mini-card"><small>Confidence</small><strong>82%</strong></div>
+              </div>
+              <div class="diagnosis">
+                <small>Signature diagnosis</small>
+                <h3>I found the issue. Here is what it means.</h3>
+                <div class="diag-grid">
+                  <div class="diag-step"><b>What I found</b>Your laptop works on hotspot, but your home router is not reachable.</div>
+                  <div class="diag-step"><b>What it means</b>The device is likely okay. The home network path needs attention.</div>
+                  <div class="diag-step"><b>What I can fix</b>I can renew IP, flush DNS, and retest the adapter safely.</div>
+                  <div class="diag-step"><b>Next step</b>Reseat Ethernet, restart modem/router, then generate an ISP report if needed.</div>
+                </div>
+              </div>
+              <div class="chat-box">
+                <p>Want me to guide you through unplugging the Ethernet cable and restarting your modem/router?</p>
+                <a class="button primary" href="#">Start guided fix</a>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="floating-report">
+          <small>ISP report readiness</small>
+          <strong>72% complete</strong>
+          <div class="meter"><span></span></div>
+          <p style="margin: 0; color: #d4e4f8; line-height: 1.5;">PingPal is collecting gateway, DNS, packet loss, and outage evidence.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="section" id="individual">
+    <div class="section-title">
+      <h2>Account creation changes based on who is signing up.</h2>
+      <p>
+        PingPal should ask users who they are first. Individuals get a personal dashboard,
+        businesses get employee management and join codes, and schools focus on teachers instead of students.
+      </p>
+    </div>
+
+    <div class="cards">
+      <article class="account-card">
+        <h3>Individual</h3>
+        <p>For home users, families, gamers, students at home, and remote workers who need fast tech rescue.</p>
+        <div class="pill-list">
+          <span class="pill">Internet help</span>
+          <span class="pill">Gaming lag</span>
+          <span class="pill">ISP reports</span>
+          <span class="pill">Device health</span>
+        </div>
+      </article>
+
+      <article class="account-card" id="business">
+        <h3>Business</h3>
+        <p>Admins can add employees, create invite codes, manage devices, and escalate issues to IT tools.</p>
+        <div class="pill-list">
+          <span class="pill">Employee invites</span>
+          <span class="pill">Generated join code</span>
+          <span class="pill">Device fleet</span>
+          <span class="pill">Ticket handoff</span>
+        </div>
+      </article>
+
+      <article class="account-card" id="teachers">
+        <h3>Teachers</h3>
+        <p>School mode targets teachers and classroom staff, keeping student volume out of the initial product.</p>
+        <div class="pill-list">
+          <span class="pill">Classroom rescue</span>
+          <span class="pill">Projector help</span>
+          <span class="pill">Wi-Fi help</span>
+          <span class="pill">School IT report</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="app-section" id="app-preview">
+    <div class="section">
+      <div class="section-title">
+        <h2>Downloaded desktop app preview</h2>
+        <p>
+          The desktop app is the heart of PingPal. It opens offline, runs local diagnostics, guides physical fixes,
+          understands hotspot rescue, and keeps troubleshooting the original network even after backup internet is connected.
+        </p>
+      </div>
+    </div>
+
+    <div class="desktop-preview">
+      <div class="large-window">
+        <div class="window-bar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <strong>Connection Rescue Mode</strong>
+          <span>Desktop app</span>
+        </div>
+        <div class="large-content">
+          <div class="mode-tabs">
+            <span class="mode-tab active">Internet down</span>
+            <span class="mode-tab">Gaming lag</span>
+            <span class="mode-tab">Remote work</span>
+            <span class="mode-tab">Printer</span>
+            <span class="mode-tab">Slow device</span>
+          </div>
+
+          <div class="flow-card">
+            <div class="flow-num">1</div>
+            <div>
+              <h4>Check the device</h4>
+              <p>PingPal checks Wi-Fi/Ethernet status, IP address, DNS, gateway, adapter health, and local logs.</p>
+            </div>
+            <span class="check">✓</span>
+          </div>
+
+          <div class="flow-card">
+            <div class="flow-num">2</div>
+            <div>
+              <h4>Guide the physical fix</h4>
+              <p>It asks the user to reseat Ethernet, check switch lights, restart modem/router/UDM, and retest.</p>
+            </div>
+            <span class="check">✓</span>
+          </div>
+
+          <div class="flow-card">
+            <div class="flow-num">3</div>
+            <div>
+              <h4>Use hotspot without losing the case</h4>
+              <p>Hotspot is treated as temporary rescue internet. PingPal keeps diagnosing the original network.</p>
+            </div>
+            <span class="check">✓</span>
+          </div>
+
+          <div class="flow-card">
+            <div class="flow-num">4</div>
+            <div>
+              <h4>Escalate with evidence</h4>
+              <p>If the issue remains, PingPal creates a clear ISP, employer IT, or school IT report.</p>
+            </div>
+            <span class="check">✓</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-preview">
+        <div class="report-card">
+          <small>Business admin feature</small>
+          <h3>Add employees with generated join codes.</h3>
+          <p style="color: #b8c8dc; line-height: 1.65; margin: 0;">
+            A business admin creates an organization, adds employees by email, or generates a temporary join code
+            that employees enter during signup to join the company workspace.
+          </p>
+          <div class="code-box">PINGPAL-482913</div>
+        </div>
+
+        <div class="report-card">
+          <small>Teacher-first school mode</small>
+          <h3>Built for teachers, not student signups.</h3>
+          <p style="color: #b8c8dc; line-height: 1.65; margin: 0;">
+            Teachers get classroom rescue buttons for projector, Wi-Fi, audio, printer, login, and learning app issues.
+            The report goes to school IT when needed.
+          </p>
+        </div>
+
+        <div class="report-card">
+          <small>Signature response</small>
+          <h3>I found the issue. Here is what it means. Here is what I can fix. Here is what you should do next.</h3>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" id="knowledge">
+    <div class="section-title">
+      <h2>Friendly knowledge base that helps users learn.</h2>
+      <p>
+        The knowledge base should feel fun, visual, and easy to read. It can teach users enough to feel confident
+        while still giving them one-click troubleshooting when they need help.
+      </p>
+    </div>
+    <div class="knowledge-grid">
+      <article class="knowledge-card">
+        <h3>Internet basics</h3>
+        <p>Modem, router, switch, DNS, Wi-Fi, Ethernet, and what each part does.</p>
+      </article>
+      <article class="knowledge-card">
+        <h3>Gaming network</h3>
+        <p>Ping, jitter, packet loss, NAT type, bufferbloat, and how to explain lag.</p>
+      </article>
+      <article class="knowledge-card">
+        <h3>Remote work</h3>
+        <p>VPN, Zoom, Teams, hotspot fallback, and what to send to employer IT.</p>
+      </article>
+      <article class="knowledge-card">
+        <h3>Classroom rescue</h3>
+        <p>Teacher-friendly fixes for projectors, audio, Wi-Fi, printers, and learning apps.</p>
+      </article>
+    </div>
+  </section>
+
+  <p class="footer-note">
+    Preview only. This page is a visual direction for PingPal's website, account paths, and desktop app experience before the production build.
+  </p>
+</body>
+</html>
