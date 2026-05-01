@@ -3,7 +3,7 @@ import platform
 import socket
 import difflib
 import subprocess
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from dotenv import load_dotenv
 import openai
 
@@ -88,6 +88,11 @@ def generate_response(user_input):
 @app.route("/")
 def home():
     return render_template("chat.html")
+
+
+@app.route("/preview")
+def product_preview():
+    return send_from_directory("preview", "index.html")
 
 
 @app.route("/chat", methods=["POST"])
