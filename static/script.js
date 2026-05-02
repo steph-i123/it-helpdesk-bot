@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearBtn = document.getElementById("clear-chat");
   const quickBtns = document.querySelectorAll(".quick-btn");
 
+  const sessionId = "session_" + Math.random().toString(36).substring(2, 10);
+
   function hideWelcome() {
     if (welcome) {
       welcome.style.display = "none";
@@ -149,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const response = await fetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, session_id: sessionId }),
       });
 
       removeTyping();
@@ -184,6 +186,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const messages = chatbox.querySelectorAll(".message, .typing-indicator");
       messages.forEach((m) => m.remove());
       showWelcome();
+      fetch("/chat/clear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      }).catch(() => {});
     });
   }
 

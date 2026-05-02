@@ -1,133 +1,113 @@
 import os
-import platform
-import socket
-import difflib
-import subprocess
+import json
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from dotenv import load_dotenv
-import openai
+from openai import OpenAI
 
-from modules import (
-    network, device, active_directory, cloud,
-    printer, qol, security, software, system
-)
+from modules.diagnostics import TOOL_DEFINITIONS, execute_tool
 
 load_dotenv()
 
 app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
-chat_history = []
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-INTENT_ROUTER = {
-    "network": network.handle_network_command,
-    "device": device.handle_device_command,
-    "ad": active_directory.handle_ad_command,
-    "cloud": cloud.handle_cloud_command,
-    "printer": printer.handle_printer_command,
-    "qol": qol.handle_qol_command,
-    "security": security.handle_security_command,
-    "software": software.handle_software_command,
-    "system": system.handle_system_command,
-}
+sessions = {}
 
-# Intent keywords mapping to categories
-INTENT_KEYWORDS = {
-    "flush dns": "network",
-    "reset adapter": "network",
-    "check internet": "network",
-    "wifi": "network",
-    "printer": "printer",
-    "print": "printer",
-    "account locked": "ad",
-    "reset password": "ad",
-    "create user": "ad",
-    "cloud backup": "cloud",
-    "cloud storage": "cloud",
-    "slow": "qol",
-    "clear temp": "qol",
-    "security": "security",
-    "antivirus": "security",
-    "install software": "software",
-    "uninstall": "software",
-    "disk space": "system",
-    "uptime": "system",
-    "temp files": "system"
-}
+SYSTEM_PROMPT = """You are PingPal, a friendly and intelligent AI IT assistant built for regular people — not tech experts.
 
+YOUR PERSONALITY:
+- You are warm, patient, and conversational. You sound like a helpful friend who happens to be great with technology.
+- Never sound robotic or overly formal. Use casual, clear language.
+- When someone describes a problem, respond like a real person would: acknowledge their frustration, then get to work.
+- You can use light humor when appropriate, but always stay helpful and professional.
 
-def detect_intent(user_input):
-    lower_input = user_input.lower()
-    for keyword, group in INTENT_KEYWORDS.items():
-        if keyword in lower_input:
-            return group
-    return None
+HOW YOU WORK:
+- Users will describe their tech problems in everyday language. They might say "my internet is being weird" instead of "I'm experiencing packet loss." You understand both.
+- When you hear a problem, THINK about what could be causing it. Then use your diagnostic tools to investigate.
+- You can and should run multiple diagnostics to build a complete picture before giving your answer.
+- If the problem isn't clear, ASK a follow-up question. This is good — it shows you care and makes the conversation feel natural. For example: "Is this happening on Wi-Fi or when you're plugged in with a cable?" or "When did this start — has it always been like this or did it just start recently?"
+- Only ask ONE question at a time. Don't overwhelm the user.
 
+YOUR DIAGNOSIS FORMAT:
+When you've figured out what's going on, structure your response like this:
 
-def format_module_response(response, group):
-    if response is None:
-        return None
+**What I found:** [What your diagnostics revealed — keep it simple]
+**What it means:** [Explain in plain English what this means for the user]
+**What I can fix:** [What you did or can do right now]
+**Next step:** [What the user should do next, or offer to do more]
 
-    if isinstance(response, dict):
-        output = response.get("output", response.get("steps", []))
-        summary = response.get("summary", "")
-        if isinstance(output, list):
-            output_text = "\n".join(str(item) for item in output)
-        else:
-            output_text = str(output)
+You don't have to use this format for every message — only when you have actual diagnostic results. For follow-up questions, greetings, or simple answers, just talk naturally.
 
-        formatted = (
-            f"**What I found:** Ran {group} diagnostics on your system.\n"
-            f"**What it means:** {summary}\n"
-            f"**What I can fix:** {output_text}\n"
-            f"**Next step:** Let me know if you need further help or want me to generate a report."
-        )
-        return {"type": "chatgpt", "response": formatted}
+WHAT YOU CAN DO:
+- You have real diagnostic tools that run on the user's system. Use them! Don't guess when you can check.
+- You can check internet connectivity, DNS, network interfaces, gateways, run traceroutes
+- You can check disk space, memory, CPU, running processes, system uptime
+- You can find large files, clear temp files
+- You can check printers, restart print services, clear print queues
+- You can check audio devices, USB devices, battery, OS info
+- You can check firewall status, failed logins, suspicious processes, open connections
+- When you need to fix something, run the appropriate tool. When you need to guide a physical action (like restarting a router), walk the user through it step by step.
 
-    if isinstance(response, list):
-        combined = "\n".join(str(item) for item in response)
-        if not combined.strip():
-            return {"type": "chatgpt", "response": f"I ran the {group} check but didn't get output. This may require a different approach on your system."}
-        formatted = (
-            f"**What I found:** Ran {group} diagnostics.\n"
-            f"**What it means:** Here are the results:\n{combined}\n"
-            f"**What I can fix:** I can re-run or try alternative diagnostics.\n"
-            f"**Next step:** Let me know if anything looks wrong or if you need more help."
-        )
-        return {"type": "chatgpt", "response": formatted}
-
-    return {"type": "chatgpt", "response": str(response)}
+IMPORTANT RULES:
+- Always run diagnostics BEFORE giving a diagnosis. Don't guess.
+- If a tool returns an error or unhelpful output, explain that simply and try an alternative approach.
+- Never tell the user to "open terminal" or "run a command." YOU run the commands for them.
+- If you can't fix something with your tools, be honest about it and explain what the user should do next (call ISP, take to repair shop, etc.)
+- Keep your responses concise. Don't write essays. Users want answers, not lectures.
+- Remember the conversation — don't ask the same question twice or repeat diagnostics unnecessarily."""
 
 
-def generate_response(user_input):
-    group = detect_intent(user_input)
-    if group and group in INTENT_ROUTER:
-        handler = INTENT_ROUTER[group]
-        result = handler(user_input)
-        formatted = format_module_response(result, group)
-        if formatted:
-            return formatted
+def get_session(session_id):
+    if session_id not in sessions:
+        sessions[session_id] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    return sessions[session_id]
 
-    try:
-        completion = openai.chat.completions.create(
+
+def process_message(session_id, user_message):
+    messages = get_session(session_id)
+    messages.append({"role": "user", "content": user_message})
+
+    max_tool_rounds = 6
+    for _ in range(max_tool_rounds):
+        response = client.chat.completions.create(
             model="gpt-4",
-            messages=[
-                {"role": "system", "content": (
-                    "You are PingPal, a calm, intelligent, professional AI IT assistant. "
-                    "When diagnosing issues, always structure your response using this format:\n\n"
-                    "**What I found:** [describe the issue]\n"
-                    "**What it means:** [explain in simple terms]\n"
-                    "**What I can fix:** [what you can do]\n"
-                    "**Next step:** [what the user should do]\n\n"
-                    "For general questions or greetings, respond naturally and helpfully. "
-                    "Be friendly, trustworthy, and easy to understand for non-technical users."
-                )},
-                {"role": "user", "content": user_input}
-            ]
+            messages=messages,
+            tools=TOOL_DEFINITIONS,
+            tool_choice="auto",
         )
-        return {"type": "chatgpt", "response": completion.choices[0].message.content}
 
-    except Exception as e:
-        return {"type": "error", "response": f"❌ Error accessing smart assistant: {str(e)}"}
+        choice = response.choices[0]
+
+        if choice.finish_reason == "tool_calls" or choice.message.tool_calls:
+            messages.append(choice.message)
+
+            for tool_call in choice.message.tool_calls:
+                fn_name = tool_call.function.name
+                try:
+                    fn_args = json.loads(tool_call.function.arguments) if tool_call.function.arguments else {}
+                except json.JSONDecodeError:
+                    fn_args = {}
+
+                result = execute_tool(fn_name, fn_args)
+
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": str(result),
+                })
+        else:
+            assistant_msg = choice.message.content or ""
+            messages.append({"role": "assistant", "content": assistant_msg})
+
+            if len(messages) > 40:
+                system_msg = messages[0]
+                messages[:] = [system_msg] + messages[-30:]
+
+            return assistant_msg
+
+    final = response.choices[0].message.content or "I ran several checks but need a moment to process. Could you describe the issue one more time?"
+    messages.append({"role": "assistant", "content": final})
+    return final
 
 
 @app.route("/")
@@ -142,40 +122,31 @@ def product_preview():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_message = request.json.get("message", "")
-    chat_history.append({"user": user_message})
+    data = request.json or {}
+    user_message = data.get("message", "")
+    session_id = data.get("session_id", "default")
+
+    if not user_message.strip():
+        return jsonify({"response": "I didn't catch that. Could you describe your issue?"})
 
     try:
-        response = generate_response(user_message)
-
-        # If it's a dict with "type"
-        if isinstance(response, dict):
-            if response.get("type") == "steps":
-                combined = "\n".join(response["steps"]) + f"\n\n{response['summary']}"
-                chat_history.append({"bot": combined})
-                return jsonify({"response": combined})
-            elif response.get("type") == "chatgpt":
-                chat_history.append({"bot": response["response"]})
-                return jsonify({"response": response["response"]})
-            elif response.get("type") == "error":
-                chat_history.append({"bot": response["response"]})
-                return jsonify({"response": response["response"]})
-
-        # If it's a list (from system, qol, etc.)
-        elif isinstance(response, list):
-            combined = "\n".join(response)
-            chat_history.append({"bot": combined})
-            return jsonify({"response": combined})
-
-        else:
-            return jsonify({"response": "⚠️ Unexpected response format."})
-
+        response = process_message(session_id, user_message)
+        return jsonify({"response": response})
     except Exception as e:
-        error_msg = f"❌ Internal error: {str(e)}"
-        chat_history.append({"bot": error_msg})
-        return jsonify({"response": error_msg})
+        error_str = str(e)
+        if "api_key" in error_str.lower() or "auth" in error_str.lower():
+            return jsonify({"response": "I'm having trouble connecting to my brain right now. Please make sure the API key is configured correctly."})
+        return jsonify({"response": f"Something went wrong on my end. Here's what I know: {error_str}"})
+
+
+@app.route("/chat/clear", methods=["POST"])
+def clear_chat():
+    data = request.json or {}
+    session_id = data.get("session_id", "default")
+    if session_id in sessions:
+        del sessions[session_id]
+    return jsonify({"status": "ok"})
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
