@@ -186,4 +186,35 @@ document.addEventListener("DOMContentLoaded", function () {
       showWelcome();
     });
   }
+
+  const navItems = document.querySelectorAll(".nav-item[data-nav]");
+  const pageTitle = document.querySelector(".page-title");
+  const pageSubtitle = document.querySelector(".page-subtitle");
+
+  const navMeta = {
+    troubleshoot: { title: "Troubleshoot", subtitle: "Describe your issue and PingPal will diagnose it" },
+    network: { title: "Network", subtitle: "Check connectivity, DNS, Wi-Fi, and internet status" },
+    device: { title: "Device Health", subtitle: "Disk space, uptime, performance, and system checks" },
+    reports: { title: "Reports", subtitle: "Generate ISP, IT, or system diagnostic reports" },
+  };
+
+  navItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.preventDefault();
+      const nav = item.getAttribute("data-nav");
+      const message = item.getAttribute("data-message");
+
+      navItems.forEach((n) => n.classList.remove("active"));
+      item.classList.add("active");
+
+      if (navMeta[nav]) {
+        if (pageTitle) pageTitle.textContent = navMeta[nav].title;
+        if (pageSubtitle) pageSubtitle.textContent = navMeta[nav].subtitle;
+      }
+
+      if (message) {
+        sendMessage(message);
+      }
+    });
+  });
 });

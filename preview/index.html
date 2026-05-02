@@ -845,6 +845,26 @@
       flex-wrap: wrap;
     }
 
+    .card-cta {
+      margin-top: 18px;
+      width: 100%;
+      text-align: center;
+      padding: 12px 20px;
+      font-size: 0.88rem;
+    }
+
+    .kb-link {
+      display: block;
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    .kb-card:hover .kb-link {
+      text-decoration: underline;
+    }
+
     /* Footer */
     .footer {
       padding: 40px 0;
@@ -878,7 +898,7 @@
   <section class="hero-section">
     <div class="container">
       <nav class="nav">
-        <a class="brand" href="#">
+        <a class="brand" href="/">
           <div class="logo-icon">
             <span class="logo-letter">P</span>
             <span class="logo-signal"></span>
@@ -960,7 +980,7 @@
                 </div>
                 <div class="cta-bar">
                   <p>Want me to guide you through restarting your modem/router?</p>
-                  <a class="btn btn-primary" href="#">Start guided fix</a>
+                  <a class="btn btn-primary" href="/">Start guided fix</a>
                 </div>
               </div>
             </div>
@@ -996,6 +1016,7 @@
             <span class="pill">ISP reports</span>
             <span class="pill">Device health</span>
           </div>
+          <a class="btn btn-primary card-cta" href="/">Get Started</a>
         </article>
 
         <article class="card" id="business">
@@ -1008,6 +1029,7 @@
             <span class="pill">Device fleet</span>
             <span class="pill">Ticket handoff</span>
           </div>
+          <a class="btn btn-primary card-cta" href="/">Get Started</a>
         </article>
 
         <article class="card" id="schools">
@@ -1020,6 +1042,7 @@
             <span class="pill">Wi-Fi support</span>
             <span class="pill">School IT report</span>
           </div>
+          <a class="btn btn-primary card-cta" href="/">Get Started</a>
         </article>
       </div>
     </div>
@@ -1120,22 +1143,26 @@
         <p>Visual, friendly, and easy to read. Learn enough to feel confident, or let PingPal handle it with one-click troubleshooting.</p>
       </div>
       <div class="kb-grid">
-        <article class="kb-card">
+        <a class="kb-card" href="/">
           <h3>Internet basics</h3>
           <p>Modem, router, switch, DNS, Wi-Fi, Ethernet, and what each part does.</p>
-        </article>
-        <article class="kb-card">
+          <span class="kb-link">Ask PingPal &rarr;</span>
+        </a>
+        <a class="kb-card" href="/">
           <h3>Gaming network</h3>
           <p>Ping, jitter, packet loss, NAT type, bufferbloat, and how to explain lag.</p>
-        </article>
-        <article class="kb-card">
+          <span class="kb-link">Ask PingPal &rarr;</span>
+        </a>
+        <a class="kb-card" href="/">
           <h3>Remote work</h3>
           <p>VPN, Zoom, Teams, hotspot fallback, and what to send to employer IT.</p>
-        </article>
-        <article class="kb-card">
+          <span class="kb-link">Ask PingPal &rarr;</span>
+        </a>
+        <a class="kb-card" href="/">
           <h3>Classroom rescue</h3>
           <p>Teacher-friendly fixes for projectors, audio, Wi-Fi, printers, and learning apps.</p>
-        </article>
+          <span class="kb-link">Ask PingPal &rarr;</span>
+        </a>
       </div>
     </div>
   </section>
