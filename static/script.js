@@ -235,7 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
     troubleshoot: { title: "Troubleshoot", subtitle: "Describe your issue and PingPal will diagnose it" },
     network: { title: "Network", subtitle: "Check connectivity, DNS, Wi-Fi, and internet status" },
     device: { title: "Device Health", subtitle: "Disk space, uptime, performance, and system checks" },
-    reports: { title: "Reports", subtitle: "Generate ISP, IT, or system diagnostic reports" },
   };
 
   navItems.forEach((item) => {

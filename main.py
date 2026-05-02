@@ -120,6 +120,16 @@ def product_preview():
     return send_from_directory("preview", "index.html")
 
 
+@app.route("/reports")
+def reports():
+    return render_template("reports.html")
+
+
+@app.route("/knowledge")
+def knowledge():
+    return render_template("knowledge.html")
+
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json or {}
