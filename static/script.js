@@ -119,25 +119,58 @@ document.addEventListener("DOMContentLoaded", function () {
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
-  function showTyping() {
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "typing-indicator";
-    typingDiv.id = "typing";
+  let thinkingInterval = null;
 
-    typingDiv.innerHTML = `
+  function showThinking() {
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.className = "thinking-indicator";
+    thinkingDiv.id = "thinking";
+
+    thinkingDiv.innerHTML = `
       <div class="message-avatar">PP</div>
-      <div class="typing-dots">
-        <span></span><span></span><span></span>
+      <div class="thinking-bubble">
+        <div class="thinking-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </div>
+        <div class="thinking-text">
+          <span class="thinking-label">PingPal is thinking</span>
+          <span class="thinking-status" id="thinking-status">Analyzing your issue...</span>
+        </div>
+        <div class="thinking-dots"><span></span><span></span><span></span></div>
       </div>
     `;
 
-    chatbox.appendChild(typingDiv);
+    chatbox.appendChild(thinkingDiv);
     chatbox.scrollTop = chatbox.scrollHeight;
+
+    const stages = [
+      "Analyzing your issue...",
+      "Running diagnostics...",
+      "Checking your system...",
+      "Gathering results...",
+      "Almost there...",
+    ];
+    let stageIdx = 0;
+
+    thinkingInterval = setInterval(() => {
+      const statusEl = document.getElementById("thinking-status");
+      if (statusEl) {
+        stageIdx = (stageIdx + 1) % stages.length;
+        statusEl.textContent = stages[stageIdx];
+      }
+    }, 3000);
   }
 
-  function removeTyping() {
-    const typing = document.getElementById("typing");
-    if (typing) typing.remove();
+  function removeThinking() {
+    if (thinkingInterval) {
+      clearInterval(thinkingInterval);
+      thinkingInterval = null;
+    }
+    const el = document.getElementById("thinking");
+    if (el) el.remove();
   }
 
   async function sendMessage(message) {
@@ -145,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     appendMessage("user", message);
     input.value = "";
-    showTyping();
+    showThinking();
 
     try {
       const response = await fetch("/chat", {
@@ -154,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ message, session_id: sessionId }),
       });
 
-      removeTyping();
+      removeThinking();
 
       if (!response.ok) {
         throw new Error(`Server error: ${response.status}`);
@@ -163,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = await response.json();
       appendMessage("bot", data.response || "I couldn't process that request. Please try again.");
     } catch (error) {
-      removeTyping();
+      removeThinking();
       console.error("Fetch error:", error);
       appendMessage("bot", "I'm having trouble connecting right now. Please check your connection and try again.");
     }

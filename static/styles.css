@@ -443,8 +443,8 @@ body {
   margin-bottom: 3px;
 }
 
-/* Typing indicator */
-.typing-indicator {
+/* Thinking indicator */
+.thinking-indicator {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
@@ -452,7 +452,7 @@ body {
   animation: messageIn 0.3s ease-out;
 }
 
-.typing-indicator .message-avatar {
+.thinking-indicator .message-avatar {
   width: 34px;
   height: 34px;
   border-radius: 10px;
@@ -467,36 +467,81 @@ body {
   flex-shrink: 0;
 }
 
-.typing-dots {
+.thinking-bubble {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 16px 20px;
+  gap: 12px;
+  padding: 14px 20px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   border-top-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
 }
 
-.typing-dots span {
-  width: 7px;
-  height: 7px;
+.thinking-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: thinkingSpin 3s linear infinite;
+}
+
+@keyframes thinkingSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.thinking-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.thinking-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.thinking-status {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  transition: opacity 0.3s;
+}
+
+.thinking-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.thinking-dots span {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--text-muted);
-  animation: typingBounce 1.4s infinite ease-in-out;
+  background: var(--accent);
+  animation: thinkingPulse 1.4s infinite ease-in-out;
 }
 
-.typing-dots span:nth-child(1) { animation-delay: 0s; }
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+.thinking-dots span:nth-child(1) { animation-delay: 0s; }
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes typingBounce {
+@keyframes thinkingPulse {
   0%, 80%, 100% {
     transform: scale(0.6);
-    opacity: 0.4;
+    opacity: 0.3;
   }
   40% {
-    transform: scale(1);
+    transform: scale(1.2);
     opacity: 1;
   }
 }
