@@ -1,9 +1,10 @@
 import subprocess
 
-def handle_system_command(intent):
+def handle_system_command(user_input):
     responses = []
+    lower_input = user_input.lower()
 
-    if intent == "clear temp files":
+    if "temp" in lower_input and "clear" in lower_input:
         try:
             result = subprocess.run("rm -rf /tmp/*", shell=True, capture_output=True, text=True)
             if result.returncode == 0:
@@ -13,18 +14,18 @@ def handle_system_command(intent):
         except Exception as e:
             responses.append(f"❌ Error: {str(e)}")
 
-    elif intent == "check disk":
+    elif "disk" in lower_input:
         try:
             result = subprocess.run("df -h", shell=True, capture_output=True, text=True)
             if result.returncode == 0:
                 lines = result.stdout.splitlines()
-                responses.append("\n".join(lines[:3]))  # Show just first 3 lines
+                responses.append("💾 Disk Space:\n" + "\n".join(lines[:5]))
             else:
                 responses.append(f"⚠️ Failed to check disk:\n{result.stderr}")
         except Exception as e:
             responses.append(f"❌ Error: {str(e)}")
 
-    elif intent == "show uptime":
+    elif "uptime" in lower_input:
         try:
             result = subprocess.run("uptime", shell=True, capture_output=True, text=True)
             if result.returncode == 0:

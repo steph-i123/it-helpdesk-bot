@@ -2,34 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Help Desk Bot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingPal — AI IT Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <div class="chat-container">
-    <header>
-      <h1>💼 IT Help Desk Assistant</h1>
-    </header>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo-icon" aria-hidden="true">
+          <span class="logo-letter">P</span>
+          <span class="logo-signal"></span>
+        </div>
+        <span class="brand-name">PingPal</span>
+      </div>
 
-    <main>
-      <div id="chatbox" class="chat-box"></div>
-      
-      <form id="chat-form" autocomplete="off">
-        <input type="text" id="user-input" placeholder="Type your IT issue..." required />
-        <button type="submit">Send</button>
-      </form>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-icon="chat" data-nav="troubleshoot">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Troubleshoot
+        </a>
+        <a href="#" class="nav-item" data-icon="network" data-nav="network" data-message="Check internet connection and run network diagnostics">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          Network
+        </a>
+        <a href="#" class="nav-item" data-icon="device" data-nav="device" data-message="Run a full device health check including disk space and system uptime">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Device Health
+        </a>
+        <a href="/reports" class="nav-item" data-icon="reports">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Reports
+        </a>
+        <a href="/knowledge" class="nav-item" data-icon="knowledge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Knowledge Base
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-badge online">
+          <span class="status-dot"></span>
+          System Online
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <h1 class="page-title">Troubleshoot</h1>
+          <span class="page-subtitle">Describe your issue and PingPal will diagnose it</span>
+        </div>
+        <div class="top-bar-right">
+          <button class="icon-btn" title="Clear chat" id="clear-chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="chat-area" id="chatbox">
+        <div class="welcome-state" id="welcome">
+          <div class="welcome-icon">
+            <div class="logo-icon large" aria-hidden="true">
+              <span class="logo-letter">P</span>
+              <span class="logo-signal"></span>
+            </div>
+          </div>
+          <h2 class="welcome-title">How can PingPal help you today?</h2>
+          <p class="welcome-subtitle">Describe your tech issue and I'll diagnose it, explain what's happening, and help you fix it.</p>
+          <div class="quick-actions">
+            <button class="quick-btn" data-message="My internet is slow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><circle cx="12" cy="20" r="1"/></svg>
+              My internet is slow
+            </button>
+            <button class="quick-btn" data-message="Check disk space">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/></svg>
+              Check disk space
+            </button>
+            <button class="quick-btn" data-message="My printer is not working">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Printer not working
+            </button>
+            <button class="quick-btn" data-message="Check system uptime">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              System uptime
+            </button>
+            <button class="quick-btn" data-message="Flush DNS cache">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Flush DNS
+            </button>
+            <button class="quick-btn" data-message="Check internet connection">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Check internet
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <form id="chat-form" autocomplete="off">
+          <div class="input-wrapper">
+            <input type="text" id="user-input" placeholder="Describe your tech issue..." required />
+            <button type="submit" id="send-btn" title="Send message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <p class="input-hint">PingPal diagnoses, explains, and helps fix tech problems. Press Enter to send.</p>
+        </form>
+      </div>
     </main>
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
