@@ -844,6 +844,41 @@ body {
   text-decoration: underline;
 }
 
+/* Report Summary Card */
+.report-summary-card {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(34, 197, 94, 0.04));
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  border-radius: var(--radius-xl);
+  margin-bottom: 24px;
+}
+
+.summary-icon {
+  flex-shrink: 0;
+}
+
+.summary-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.summary-heading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.summary-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
 /* Report View */
 .report-results {
   display: flex;
@@ -872,17 +907,60 @@ body {
   letter-spacing: -0.02em;
 }
 
+.report-explanation {
+  padding: 14px 20px;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--text);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.report-raw-toggle {
+  border-top: none;
+}
+
+.raw-toggle-btn {
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: color var(--transition);
+}
+
+.raw-toggle-btn:hover {
+  color: var(--accent);
+}
+
+.raw-toggle-btn::-webkit-details-marker {
+  display: none;
+}
+
+.raw-toggle-btn::before {
+  content: "▶ ";
+  font-size: 0.7rem;
+  margin-right: 4px;
+}
+
+details[open] .raw-toggle-btn::before {
+  content: "▼ ";
+}
+
 .report-data {
   padding: 16px 20px;
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   line-height: 1.65;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   white-space: pre-wrap;
   word-break: break-word;
   margin: 0;
-  background: var(--surface);
+  background: var(--bg);
   overflow-x: auto;
+  border-top: 1px solid var(--border-light);
 }
 
 .download-btn, .back-btn {

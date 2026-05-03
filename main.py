@@ -141,14 +141,15 @@ def generate_report(report_type):
         return "Invalid report type", 404
 
     title = valid_types[report_type]
-    sections = report_generator.generate(report_type)
+    result = report_generator.generate(report_type)
     timestamp = datetime.now().strftime("%B %d, %Y at %I:%M %p")
 
     return render_template(
         "report_view.html",
         report_type=report_type,
         title=title,
-        sections=sections,
+        summary=result["summary"],
+        sections=result["sections"],
         timestamp=timestamp,
     )
 
@@ -166,7 +167,9 @@ def download_report(report_type):
     if report_type not in valid_types:
         return "Invalid report type", 404
 
-    sections = report_generator.generate(report_type)
+    result = report_generator.generate(report_type)
+    sections = result["sections"]
+    ai_summary = result["summary"]
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     filename = f"PingPal_{valid_types[report_type]}_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
 
@@ -175,9 +178,17 @@ def download_report(report_type):
         f"Generated: {timestamp}",
         "=" * 60,
         "",
+        "PINGPAL SUMMARY",
+        "-" * 40,
+        ai_summary,
+        "",
+        "=" * 60,
+        "",
     ]
     for section in sections:
         lines.append(f"[ {section['title']} ]")
+        if section.get("explanation"):
+            lines.append(f"  > {section['explanation']}")
         lines.append("-" * 40)
         lines.append(section["data"])
         lines.append("")

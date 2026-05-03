@@ -68,13 +68,32 @@
       </header>
 
       <div class="page-content">
+        <div class="report-summary-card">
+          <div class="summary-icon">
+            <div class="logo-icon" aria-hidden="true">
+              <span class="logo-letter">P</span>
+              <span class="logo-signal"></span>
+            </div>
+          </div>
+          <div class="summary-content">
+            <h2 class="summary-heading">PingPal Summary</h2>
+            <p class="summary-text">{{ summary }}</p>
+          </div>
+        </div>
+
         <div class="report-results">
           {% for section in sections %}
           <div class="report-section">
             <div class="report-section-header">
               <h3>{{ section.title }}</h3>
             </div>
-            <pre class="report-data">{{ section.data }}</pre>
+            {% if section.explanation %}
+            <div class="report-explanation">{{ section.explanation }}</div>
+            {% endif %}
+            <details class="report-raw-toggle">
+              <summary class="raw-toggle-btn">Show raw diagnostic data</summary>
+              <pre class="report-data">{{ section.data }}</pre>
+            </details>
           </div>
           {% endfor %}
         </div>
