@@ -140,18 +140,27 @@ def generate_report(report_type):
     if report_type not in valid_types:
         return "Invalid report type", 404
 
-    title = valid_types[report_type]
-    result = report_generator.generate(report_type)
-    timestamp = datetime.now().strftime("%B %d, %Y at %I:%M %p")
-
     return render_template(
         "report_view.html",
         report_type=report_type,
-        title=title,
-        summary=result["summary"],
-        sections=result["sections"],
-        timestamp=timestamp,
+        title=valid_types[report_type],
     )
+
+
+@app.route("/reports/api/<report_type>")
+def report_api(report_type):
+    valid_types = ["isp", "device", "network", "security", "gaming", "remote"]
+    if report_type not in valid_types:
+        return jsonify({"error": "Invalid report type"}), 404
+
+    result = report_generator.generate(report_type)
+    timestamp = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+
+    return jsonify({
+        "summary": result["summary"],
+        "sections": result["sections"],
+        "timestamp": timestamp,
+    })
 
 
 @app.route("/reports/download/<report_type>")
