@@ -7,6 +7,7 @@ from openai import OpenAI
 
 from modules.diagnostics import TOOL_DEFINITIONS, execute_tool
 from modules import report_generator
+from modules import knowledge_articles
 
 load_dotenv()
 
@@ -217,6 +218,22 @@ def download_report(report_type):
 @app.route("/knowledge")
 def knowledge():
     return render_template("knowledge.html")
+
+
+@app.route("/knowledge/<slug>")
+def knowledge_article(slug):
+    meta = knowledge_articles.get_article_meta(slug)
+    if not meta:
+        return "Article not found", 404
+    return render_template("knowledge_article.html", slug=slug, meta=meta)
+
+
+@app.route("/knowledge/api/<slug>")
+def knowledge_article_api(slug):
+    result = knowledge_articles.generate_article(slug)
+    if not result:
+        return jsonify({"error": "Article not found"}), 404
+    return jsonify(result)
 
 
 @app.route("/chat", methods=["POST"])

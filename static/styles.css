@@ -844,6 +844,47 @@ body {
   text-decoration: underline;
 }
 
+/* Knowledge Article */
+.article-body {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.article-body p {
+  margin-bottom: 16px;
+}
+
+.article-body strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.article-footer {
+  text-align: center;
+  padding: 28px 20px;
+  margin-top: 24px;
+  border-top: 1px solid var(--border-light);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.article-footer a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.article-footer a:hover {
+  text-decoration: underline;
+}
+
 /* Report Loading State */
 .report-loading-state {
   display: flex;

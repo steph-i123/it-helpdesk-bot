@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingPal — {{ meta.title }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo-icon" aria-hidden="true">
+          <span class="logo-letter">P</span>
+          <span class="logo-signal"></span>
+        </div>
+        <span class="brand-name">PingPal</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Troubleshoot
+        </a>
+        <a href="/" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          Network
+        </a>
+        <a href="/" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Device Health
+        </a>
+        <a href="/reports" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Reports
+        </a>
+        <a href="/knowledge" class="nav-item active">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Knowledge Base
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="status-badge online">
+          <span class="status-dot"></span>
+          System Online
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <h1 class="page-title">{{ meta.icon }} {{ meta.title }}</h1>
+          <span class="page-subtitle">{{ meta.category }}</span>
+        </div>
+        <div class="top-bar-right">
+          <a href="/knowledge" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            All Topics
+          </a>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Loading -->
+        <div id="article-loading" class="report-loading-state">
+          <div class="loading-card">
+            <div class="loading-header">
+              <div class="loading-spinner"></div>
+              <div>
+                <h2 class="loading-title">PingPal is writing this article</h2>
+                <p class="loading-subtitle" id="loading-status">Preparing a simple explanation...</p>
+              </div>
+            </div>
+            <div class="loading-progress">
+              <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+              <span class="progress-pct" id="progress-pct">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Article content (hidden until loaded) -->
+        <div id="article-content" style="display: none;">
+          <div class="article-body" id="article-body"></div>
+          <div class="article-footer">
+            <p>Still have questions? <a href="/">Ask PingPal directly</a> — just describe your problem and PingPal will diagnose it for you.</p>
+            <a href="/knowledge" class="back-btn" style="margin-top: 12px; display: inline-flex;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              Back to Knowledge Base
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      const slug = "{{ slug }}";
+      const fillEl = document.getElementById("progress-fill");
+      const pctEl = document.getElementById("progress-pct");
+      const statusEl = document.getElementById("loading-status");
+
+      let progress = 0;
+      const msgs = ["Thinking about this topic...", "Writing in plain English...", "Almost ready..."];
+      let msgIdx = 0;
+
+      const pInterval = setInterval(() => {
+        if (progress < 85) {
+          progress += Math.random() * 12 + 3;
+          if (progress > 85) progress = 85;
+          fillEl.style.width = Math.round(progress) + "%";
+          pctEl.textContent = Math.round(progress) + "%";
+        }
+      }, 600);
+
+      const mInterval = setInterval(() => {
+        msgIdx = (msgIdx + 1) % msgs.length;
+        statusEl.textContent = msgs[msgIdx];
+      }, 3000);
+
+      fetch(`/knowledge/api/${slug}`)
+        .then(r => r.json())
+        .then(data => {
+          clearInterval(pInterval);
+          clearInterval(mInterval);
+          fillEl.style.width = "100%";
+          pctEl.textContent = "100%";
+          statusEl.textContent = "Done!";
+
+          setTimeout(() => {
+            document.getElementById("article-loading").style.display = "none";
+            document.getElementById("article-content").style.display = "block";
+
+            let html = data.content;
+            html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+            html = html.replace(/\n\n/g, "</p><p>");
+            html = html.replace(/\n- /g, "<br>• ");
+            html = html.replace(/\n/g, "<br>");
+            html = "<p>" + html + "</p>";
+
+            document.getElementById("article-body").innerHTML = html;
+          }, 600);
+        })
+        .catch(() => {
+          clearInterval(pInterval);
+          clearInterval(mInterval);
+          statusEl.textContent = "Something went wrong. Please try again.";
+          fillEl.style.background = "#ef4444";
+        });
+    })();
+  </script>
+</body>
+</html>
